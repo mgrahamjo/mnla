@@ -4,7 +4,7 @@
   "description": "",
   "main": "mnla.js",
   "scripts": {
-    "js": "browserify client.js -o dist.js -t [ babelify --presets [ es2015 ] ] --debug",
+    "js": "browserify client.js -o dist.js -t [ babelify --presets [ es2015 ] ]",
     "watch": "npm-watch"
   },
   "author": "",
@@ -12,7 +12,7 @@
   "watch": {
     "js": {
       "patterns": [
-        "*.js"
+        "*"
       ],
       "extensions": "js",
       "ignore": "dist.js"

@@ -9,7 +9,7 @@ module.exports = modules => {
 	let templates = {
 			server: {},
 			client: '',
-			json: []
+			data: []
 		},
 
 		req = {
@@ -28,9 +28,9 @@ module.exports = modules => {
 
 			if (Object.keys(templates.server).length === totalModuleCount && clientTemplateCount === totalModuleCount) {
 
-				templates.json = '<script>window.manila=window.manila||{};window.manila.json=\'{' + templates.json.join(',') + '}\';</script>';
+				templates.data = '<script>window.manila=window.manila||{};window.manila.data=JSON.parse(\'{' + templates.data.join(',') + '}\');</script>';
 
-				templates.client += templates.json;
+				templates.client += templates.data;
 
 				resolve(templates);
 
@@ -44,7 +44,7 @@ module.exports = modules => {
 
 				res.json = data => {
 
-					templates.json.push(`"${moduleName}":${JSON.stringify(data)}`);
+					templates.data.push(`"${moduleName}":${JSON.stringify(data)}`);
 
 					manila(`${moduleName}.mnla`, data).then(html => {
 

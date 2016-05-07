@@ -4,94 +4,174 @@ window.manila = window.manila || {};
 
 window.manila.handlers = {};
 
-function resolvePromise(resolve, promise) {
+// function resolvePromise(resolve, promise) {
 
-	if (promise && typeof promise.then === 'function') {
+// 	if (promise && typeof promise.then === 'function') {
 
-		promise.then(data => {
+// 		promise.then(data => {
 
-			resolve(data);
+// 			resolve(data);
 			
-		});
+// 		});
 
-	}
+// 	}
 
-}
+// }
 
-window.manila.component = function (modules) {
+// function component(modules) {
 
-	[...document.querySelectorAll('[data-component]')].forEach(el => {
+// 	[...document.querySelectorAll('[data-component]')].forEach(el => {
 
-		let componentName = el.getAttribute('data-component'),
+// 		let componentName = el.getAttribute('data-component'),
 
-			component = modules[componentName];
+// 			component = modules[componentName];
 		
-		compile( el.getAttribute('data-template') ).then(render => {
+// 		compile( el.getAttribute('data-template') ).then(render => {
 
-			function resolve(data = {}) {
+// 			function resolve(data = {}) {
 
-				let index = 0;
+// 				let index = 0;
 
-				window.manila.handlers[componentName] = [];
+// 				window.manila.handlers[componentName] = [];
 
-				data.on = (event, handler, ...args) => {
+// 				data.on = (event, handler, ...args) => {
 
-					let eventString;
+// 					let eventString;
 
-					window.manila.handlers[componentName][index] = e => {
+// 					window.manila.handlers[componentName][index] = e => {
 
-						e.stopPropagation();
+// 						e.stopPropagation();
 						
-						args.push(e);
+// 						args.push(e);
 
-						resolvePromise(resolve, handler.apply(data, args));
+// 						resolvePromise(resolve, handler.apply(data, args));
 
-					};
+// 					};
 
-					eventString = `on${event}=manila.handlers.${componentName}[${index}](event)`;
+// 					eventString = `on${event}=manila.handlers.${componentName}[${index}](event)`;
 
-					index++;
+// 					index++;
 
-					return eventString;
+// 					return eventString;
+
+// 				};
+
+// 				let tagName = el.tagName.toLowerCase();
+
+// 				if (tagName === 'input' || tagName === 'textarea') {
+
+// 					el.value = render(data);
+
+// 				} else {
+
+// 					el.innerHTML = render(data);
+
+// 				}
+
+// 			}
+
+// 			component.notify = (...args) => {
+
+// 				if (typeof component.listen === 'function') {
+
+// 					resolvePromise(resolve, component.listen.apply(component, [...args]))
+
+// 				}
+
+// 			};
+
+// 			if (typeof component.init === 'function') {
+
+// 				resolvePromise(resolve, component.init());
+
+// 			} else if (window.manila.json[componentName]) {
+
+// 				resolve(JSON.parse(window.manila.json)[componentName]);
+
+// 			}
+
+// 		});
+
+// 	});
+
+// };
+
+// TEST
+
+let listeners = {};
+
+function component(componentName, component) {
+
+	let vm = window.manila.data[componentName] || {},
+
+		el = document.querySelector(`.${componentName}-component`);
+
+	compile( el.getAttribute('data-template') ).then(render => {
+
+		function resolve(data) {
+
+			let index = 0;
+
+			window.manila.handlers[componentName] = [];
+
+			data.on = (event, handler, ...args) => {
+
+				let eventString;
+
+				window.manila.handlers[componentName][index] = e => {
+
+					e.stopPropagation();
+					
+					args.push(e);
+
+					handler.apply(data, args);
+
+					resolve(data);
 
 				};
 
-				let tagName = el.tagName.toLowerCase();
+				eventString = `on${event}=manila.handlers.${componentName}[${index}](event)`;
 
-				if (tagName === 'input' || tagName === 'textarea') {
+				index++;
 
-					el.value = render(data);
-
-				} else {
-
-					el.innerHTML = render(data);
-
-				}
-
-			}
-
-			component.notify = (...args) => {
-
-				if (typeof component.listen === 'function') {
-
-					resolvePromise(resolve, component.listen.apply(component, [...args]))
-
-				}
+				return eventString;
 
 			};
 
-			if (typeof component.init === 'function') {
+			el.innerHTML = render(vm);
 
-				resolvePromise(resolve, component.init());
+		}
 
-			} else if (window.manila.json[componentName]) {
+		vm.render = () => {
+			resolve(vm);
+		};
 
-				resolve(JSON.parse(window.manila.json)[componentName]);
+		let listener = component(vm);
 
-			}
+		listeners[componentName] = (...args) => {
+			
+			listener.apply(vm, args);
 
-		});
+			resolve(vm);
+
+		};
+
+		resolve(vm);
 
 	});
 
+}
+
+function notify(componentName, ...args) {
+
+	listeners[componentName].apply(undefined, args);
+
+}
+
+window.manila.component = component;
+window.manila.notify = notify;
+
+module.exports = {
+	component: component,
+	notify: notify
 };
