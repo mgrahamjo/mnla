@@ -4,19 +4,13 @@ const fs = require('fs'),
 	path = require('path'),
 	manila = require('manila')();
 
-module.exports = modules => {
+module.exports = (modules, req, res) => {
 
 	let templates = {
-			server: {},
-			client: '',
+			component: {},
+			clientData: '',
 			data: []
 		},
-
-		req = {
-			query: {}
-		},
-
-		res = {},
 
 		totalModuleCount = Object.keys(modules).length,
 
@@ -26,11 +20,11 @@ module.exports = modules => {
 
 		function update() {
 
-			if (Object.keys(templates.server).length === totalModuleCount && clientTemplateCount === totalModuleCount) {
+			if (Object.keys(templates.component).length === totalModuleCount && clientTemplateCount === totalModuleCount) {
 
 				templates.data = '<script>window.manila=window.manila||{};window.manila.data=JSON.parse(\'{' + templates.data.join(',') + '}\');</script>';
 
-				templates.client += templates.data;
+				templates.clientData += templates.data;
 
 				resolve(templates);
 
@@ -48,7 +42,7 @@ module.exports = modules => {
 
 					manila(`${moduleName}.mnla`, data).then(html => {
 
-						templates.server[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}" data-template="#${moduleName}-template">${html}</div>`;
+						templates.component[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}">${html}</div>`;
 
 						update();
 
@@ -64,13 +58,13 @@ module.exports = modules => {
 
 			} else {
 
-				templates.server[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}" data-template="#${moduleName}-template"></div>`;
+				templates.component[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}"></div>`;
 
 			}
 
 			fs.readFile(path.join(path.dirname(require.main.filename), `views/${moduleName}.mnla`), (err, file) => {
 
-				templates.client += `<script type="text/template" id="${moduleName}-template">${file}</script>`;
+				templates.clientData += `<script type="text/template" id="${moduleName}-template">${file}</script>`;
 
 				clientTemplateCount++;
 
