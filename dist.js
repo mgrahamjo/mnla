@@ -7,7 +7,8 @@ window.manila = window.manila || {};
 
 window.manila.handlers = {};
 
-var listeners = {};
+var components = {},
+    selection = void 0;
 
 function component(componentName, component) {
 
@@ -37,7 +38,10 @@ function component(componentName, component) {
 
 					handler.apply(data, args);
 
-					resolve(data);
+					if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+
+						resolve(data);
+					}
 				};
 
 				eventString = 'on' + event + '=manila.handlers.' + componentName + '[' + index + '](event)';
@@ -55,36 +59,40 @@ function component(componentName, component) {
 			resolve(vm);
 		};
 
-		var listener = component(vm);
+		var methods = component(vm);
 
-		listeners[componentName] = function () {
-			for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-				args[_key2] = arguments[_key2];
-			}
+		if (methods) {
 
-			listener.apply(vm, args);
+			components[componentName] = {};
 
-			resolve(vm);
-		};
+			Object.keys(methods).forEach(function (key) {
+
+				components[componentName][key] = function () {
+					for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+						args[_key2] = arguments[_key2];
+					}
+
+					var result = methods[key].apply(vm, args);
+
+					resolve(vm);
+
+					return result;
+				};
+			});
+		}
 
 		resolve(vm);
 	});
-}
 
-function notify(componentName) {
-	for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-		args[_key3 - 1] = arguments[_key3];
-	}
-
-	listeners[componentName].apply(undefined, args);
+	return window.manila;
 }
 
 window.manila.component = component;
-window.manila.notify = notify;
+window.manila.components = components;
 
 module.exports = {
 	component: component,
-	notify: notify
+	components: components
 };
 
 },{"./compile":2}],2:[function(require,module,exports){

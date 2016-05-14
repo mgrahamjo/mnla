@@ -4,7 +4,9 @@ window.manila = window.manila || {};
 
 window.manila.handlers = {};
 
-let listeners = {};
+let components = {},
+	
+	selection;
 
 function component(componentName, component) {
 
@@ -32,7 +34,11 @@ function component(componentName, component) {
 
 					handler.apply(data, args);
 
-					resolve(data);
+					if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+						
+						resolve(data);
+
+					}
 
 				};
 
@@ -54,32 +60,40 @@ function component(componentName, component) {
 			
 		};
 
-		let listener = component(vm);
+		let methods = component(vm);
 
-		listeners[componentName] = (...args) => {
-			
-			listener.apply(vm, args);
+		if (methods) {
 
-			resolve(vm);
+			components[componentName] = {};
 
-		};
+			Object.keys(methods).forEach(key => {
+
+				components[componentName][key] = (...args) => {
+
+					let result = methods[key].apply(vm, args);
+
+					resolve(vm);
+
+					return result;
+
+				};
+
+			});
+
+		}
 
 		resolve(vm);
 
 	});
 
-}
-
-function notify(componentName, ...args) {
-
-	listeners[componentName].apply(undefined, args);
+	return window.manila;
 
 }
 
 window.manila.component = component;
-window.manila.notify = notify;
+window.manila.components = components;
 
 module.exports = {
 	component: component,
-	notify: notify
+	components: components
 };
