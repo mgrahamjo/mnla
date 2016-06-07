@@ -31,6 +31,24 @@ module.exports = (modules, req, res) => {
 			}
 
 		}
+
+		function addTemplateData(moduleName, data) {
+
+			templates.data.push(`"${moduleName}":${JSON.stringify(data)}`);
+
+			manila(`${moduleName}.mnla`, data).then(html => {
+
+				templates.component[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}">${html}</div>`;
+
+				update();
+
+			}).catch(err => {
+
+				console.trace(err.stack);
+
+			});
+
+		}
 		
 		for (let moduleName in modules) {
 
@@ -38,23 +56,15 @@ module.exports = (modules, req, res) => {
 
 				res.json = data => {
 
-					templates.data.push(`"${moduleName}":${JSON.stringify(data)}`);
-
-					manila(`${moduleName}.mnla`, data).then(html => {
-
-						templates.component[moduleName] = `<div class="${moduleName}-component" data-component="${moduleName}">${html}</div>`;
-
-						update();
-
-					}).catch(err => {
-
-						console.trace(err.stack);
-
-					});
+					addTemplateData(moduleName, data);
 
 				};
 
 				modules[moduleName](req, res);
+
+			} else if (modules[moduleName]) {
+
+				addTemplateData(moduleName, modules[moduleName]);
 
 			} else {
 

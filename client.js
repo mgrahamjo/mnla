@@ -34,7 +34,8 @@ function component(componentName, component) {
 
 					handler.apply(data, args);
 
-					if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+					if (e.target.tagName !== 'INPUT' && 
+						 e.target.tagName !== 'TEXTAREA') {
 						
 						resolve(data);
 
