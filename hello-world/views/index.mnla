@@ -1,0 +1,18 @@
+<!-- views/index.mnla -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MNLA</title>
+</head>
+<body>
+    <!-- since we've set up the 'message' and 'input' components, we can render them thusly: -->
+    <::component.message::>
+    <::component.input::>
+
+    <!-- to allow client-side data binding, include this at the end of the body: -->
+    <::clientData::>
+    <!-- and don't forget your client side scripts: -->
+    <script src="/dist.js"></script> <!-- this is from the node_modules/mnla folder -->
+    <script src="/js/app.js"></script> <!-- this is from the assets folder -->
+</body>
+</html>

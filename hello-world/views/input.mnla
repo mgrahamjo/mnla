@@ -1,0 +1,4 @@
+<!-- views/input.mnla -->
+<!-- 'on' is a special method that you can use to listen to DOM events. -->
+<!-- 'updateMessage' is a custom handler that we'll define in a client side script. -->
+<input type="text" <:on('input', updateMessage):> value="<:message:>" />
