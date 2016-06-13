@@ -1,6 +1,6 @@
 # MNLA
 
-MNLA is a wrapper for the [Manila](https://github.com/mgrahamjo/manila) template engine that provides universal (isomorphic) rendering and client-side data binding. It adds only 2.5KB of client-side code and 2KB of server-side code on top of the Manila template engine, which is 4KB of server-side code.
+MNLA is a wrapper for the Manila template engine that provides universal (isomorphic) rendering and client-side data binding. It adds only 2.5KB of client-side code and 2KB of server-side code on top of the Manila template engine, which is 4KB of server-side code.
 
 ## Installation
 

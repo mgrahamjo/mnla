@@ -1,7 +1,7 @@
 {
   "name": "mnla",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.0.3",
+  "description": "Dead simple universal JavaScript.",
   "main": "mnla.js",
   "scripts": {
     "js": "browserify client.js -o dist.js -t [ babelify --presets [ es2015 ] ]",
