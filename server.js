@@ -22,7 +22,7 @@ module.exports = (modules, req, res) => {
 
 			if (Object.keys(templates.component).length === totalModuleCount && clientTemplateCount === totalModuleCount) {
 
-				templates.data = '<script>window.manila=window.manila||{};window.manila.data=JSON.parse(\'{' + templates.data.join(',') + '}\');</script>';
+				templates.data = '<script>window.manila=window.manila||{};window.manila.data=JSON.parse(\'{' + templates.data.join(',').replace(/'/g, "\\'").replace(/"/g, '\\"') + '}\');</script>';
 
 				templates.clientData += templates.data;
 

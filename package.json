@@ -1,6 +1,6 @@
 {
   "name": "mnla",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Dead simple universal JavaScript.",
   "main": "mnla.js",
   "scripts": {
